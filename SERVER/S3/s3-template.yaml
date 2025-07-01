@@ -1,0 +1,125 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform:
+  - AWS::Serverless-2016-10-31
+Description: >
+  SQM Infrastracture - S3 Buckets - Nested Stack
+  
+Parameters:
+  envName:
+    Type: String
+  
+Conditions: 
+  IsProd: 
+    Fn::Equals:
+      - !Ref envName
+      - "prod"
+  IsQA: 
+    Fn::Equals:
+      - !Ref envName
+      - "qa"
+  IsDev: 
+    Fn::Equals:
+      - !Ref envName
+      - "dev"
+
+# Mappings:
+#   EnvMap:
+#     prod:
+#         "accountId": "044123286555"
+#         "databaseHost": "tower-fctool-prd.cluster-cmjdts1vjcxu.us-west-2.rds.amazonaws.com"
+#         "s3BucketName": "ssc-data-models-prod"
+#         "s3Fab10BucketName": "ssc-fab10-versions-prod"
+#         "iAmAccess": "AKIARTEADKQURHNN36FJ"
+#         "iAmSecret": "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"
+#         "salesForceApi": "https://towersemi.my.salesforce.com/services"
+#         "forecastFabsApi": "https://towersemi.my.salesforce.com/services/apexrest/forcast-Fabs/"
+#         "forecastOppsApi": "https://towersemi.my.salesforce.com/services/apexrest/forcast-opportunities/"
+#         "resourceArn": "arn:aws:rds:us-west-2:044123286555:cluster:tower-fctool-prd"
+#         "secretArn": "arn:aws:secretsmanager:us-west-2:044123286555:secret:rds-db-credentials/cluster-QM5PO4C62WEFU3SM5WPCV4ZAAQ/fctool_admin-zzd9to"
+#     dev: 
+#         "accountId": "145190047613"
+#         "databaseHostbk": "prod-nft-db-restore-202404231313-cluster.cluster-csmqx4dsbauj.us-west-2.rds.amazonaws.com"
+#         "databaseHost": "tower-fctool-dev.cluster-csmqx4dsbauj.us-west-2.rds.amazonaws.com"
+#         "s3BucketName": "ssc-data-models-dev"
+#         "s3Fab10BucketName": "ssc-fab10-versions-dev"
+#         "iAmAccess": "AKIASDTQAJ56RWAJTQ7R"
+#         "iAmSecret": "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"
+#         "salesForceApi": "https://towersemidev--forecast1.sandbox.my.salesforce.com/services"
+#         "forecastFabsApi": "https://towersemidev--forecast1.sandbox.my.salesforce.com/services/apexrest/forcast-Fabs/"
+#         "forecastOppsApi": "https://towersemidev--forecast1.sandbox.my.salesforce.com/services/apexrest/forcast-opportunities/"
+#         "resourceArn": "arn:aws:rds:us-west-2:145190047613:cluster:tower-fctool-dev"
+#         "resourceArnbk": "arn:aws:rds:us-west-2:145190047613:cluster:prod-nft-db-restore-202404231313-cluster"
+#         "secretArn": "arn:aws:secretsmanager:us-west-2:145190047613:secret:dev/cp_db_secret-QOapNR"
+        
+Resources:
+
+###########################################################################
+###########             Frontend UI bucket                      ###########
+###########################################################################
+    frontendUIS3Bucket:
+        Type: AWS::S3::Bucket
+        Properties:
+          BucketName: !Sub "sqm-frontend-${AWS::AccountId}"
+          PublicAccessBlockConfiguration:
+            BlockPublicAcls: true
+            BlockPublicPolicy: true
+            IgnorePublicAcls: true
+            RestrictPublicBuckets: true
+          CorsConfiguration:
+            CorsRules:
+              - AllowedHeaders:
+                  - '*'
+                AllowedMethods:
+                  - GET
+                AllowedOrigins:
+                  - '*'
+                ExposedHeaders: []
+                MaxAge: 3600
+
+###########################################################################
+###########             Data Files Bucket                       ###########
+###########################################################################
+    DataFilesS3Bucket:
+        Type: AWS::S3::Bucket
+        Properties:
+          BucketName: !Sub "sqm-datafiles-${AWS::AccountId}"
+          PublicAccessBlockConfiguration:
+            BlockPublicAcls: true
+            BlockPublicPolicy: true
+            IgnorePublicAcls: true
+            RestrictPublicBuckets: true
+          CorsConfiguration:
+            CorsRules:
+              - AllowedHeaders:
+                  - '*'
+                AllowedMethods:
+                  - GET
+                  - PUT
+                  - POST
+                  - DELETE
+                AllowedOrigins:
+                  - '*'
+                ExposedHeaders: []
+                MaxAge: 3600
+
+Outputs:    
+  DataFilesBucketName:
+    Description: "Data Files S3 bucket"
+    Value: !Ref DataFilesS3Bucket
+    Export:
+      Name: DataFilesBucketName
+  WebAppBucketURL:
+    Description: "Frontend UI S3 bucket"
+    Value: !GetAtt frontendUIS3Bucket.WebsiteURL
+    Export:
+      Name: WebAppBucketURL
+  WebAppBucketName:
+    Description: "Frontend UI S3 bucket Name"
+    Value: !Ref frontendUIS3Bucket
+    Export:
+      Name: WebAppBucketName
+  WebAppBucketARN:
+    Description: "ARN of the frontend UI S3 bucket"
+    Value: !GetAtt frontendUIS3Bucket.Arn
+    Export:
+      Name: WebAppBucketARN

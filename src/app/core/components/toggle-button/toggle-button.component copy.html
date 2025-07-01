@@ -1,0 +1,29 @@
+  <!-- Sliding Toggle -->
+<div class="relative w-72 h-8 bg-gray-200 dark:bg-gray-700 rounded shadow-inner mb-6 transition-all px-1 py-1">
+    <!-- Sliding Thumb -->
+    <div
+        class="absolute top-1 bottom-1 left-1 w-[calc(50%-0.5rem)] bg-white dark:bg-gray-800 rounded shadow transition-transform duration-300 ease-in-out"
+        [ngStyle]="{
+            transform: internalMode()===modes().first.key ? 'translateX(0%)' : 'translateX(100%)'
+        }"
+        style="right:1px;"
+    ></div>
+
+    <!-- Toggle Labels -->
+    <div class="relative z-10 flex w-full h-full text-{{size()}} font-semibold text-gray-600 dark:text-gray-200 gap-2">
+        <button
+            class="flex-1 rounded-full focus:outline-none h-full"
+            [class.text-primary]="internalMode()===modes().first.key"
+            (click)="setMode(modes().first.key)"
+        >
+            {{modes().first.label}}
+        </button>
+        <button
+            class="flex-1 rounded-full focus:outline-none h-full"
+            [class.text-primary]="internalMode()===modes().second.key"
+            (click)="setMode(modes().second.key)"
+        >
+            {{modes().second.label}}
+        </button>
+    </div>
+</div>  

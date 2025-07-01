@@ -1,0 +1,59 @@
+<!--sidebar-->
+
+<c-sidebar
+  #sidebar1="cSidebar"
+  class="d-print-none sidebar sidebar-fixed border-end"
+  colorScheme="dark"
+  id="sidebar1"
+  visible
+>
+  <c-sidebar-header class="border-bottom">
+    <c-sidebar-brand [routerLink]="[]">
+      <!-- <svg [class]="{icon: false}" cIcon class="sidebar-brand-full" height="32" name="logo" title="CoreUI Logo"></svg>
+      <svg cIcon class="sidebar-brand-narrow" height="32" name="signet" title="CoreUI Logo"></svg> -->
+      <div class="flex justify-center">
+        <a href="/" class="flex items-center hover:opacity-80 transition-opacity">
+          <i class="fa fa-link  text-amber-600 mr-2 text-3xl"></i>        
+          <span class="text-3xl font-bold">G2MU</span><span class="text-2xl font-bold text-sky-600">.com</span>
+        </a>
+    </div>
+    </c-sidebar-brand>
+  </c-sidebar-header>
+
+  <ng-scrollbar pointerEventsMethod="scrollbar" visibility="hover">
+    <c-sidebar-nav [navItems]="navItems" dropdownMode="close" compact>
+      <li class="border-top my-2 mx-3"></li>
+      <li class="nav-item">
+        <a href="/app/pricing/plans" class="btn btn-ghost-light flex align-items-center w-full">
+          <svg cIcon name="cilDiamond" size="lg" class="me-2 text-warning"></svg> 
+          <span class="text-3">Upgrade Plan</span>
+        </a>
+      </li>
+    </c-sidebar-nav>
+  </ng-scrollbar>
+
+  @if (!sidebar1.narrow) {
+    <c-sidebar-footer cSidebarToggle="sidebar1" class="border-top d-none d-lg-flex" toggle="unfoldable" style="cursor: pointer;">      
+      <button cSidebarToggler aria-label="Toggle sidebar fold"></button>
+    </c-sidebar-footer>
+  }
+</c-sidebar>
+
+<!--main-->
+<div class="wrapper d-flex flex-column min-vh-100">
+  <!--app-header-->
+  <app-default-header
+    [cShadowOnScroll]="'sm'"
+    class="mb-4 d-print-none header header-sticky p-0 shadow-sm"
+    position="sticky"
+    sidebarId="sidebar1"
+  />
+  <!--app-body-->
+  <div class="body flex-grow-1">
+    <c-container breakpoint="lg" class="h-auto px-4">      
+      <router-outlet />
+    </c-container>
+  </div>
+  <!--app footer-->
+  <app-default-footer />
+</div>

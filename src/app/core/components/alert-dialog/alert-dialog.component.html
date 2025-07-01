@@ -1,0 +1,23 @@
+<c-modal [visible]="visible()" alignment="center" backdrop="static">
+  <c-modal-header>
+    <h5 class="modal-title text-gray-900 font-semibold text-xl">
+      <i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>
+      {{ title() }}
+    </h5>
+  </c-modal-header>
+
+  <c-modal-body class="text-gray-900 text-md mb-4">
+    <ng-content></ng-content>    
+  </c-modal-body>
+
+  <c-modal-footer class="d-flex gap-2 justify-end text-sm">    
+    <button class="btn btn-sm btn-outline-secondary font-semibold text-gray-900" (click)="onCancel()">
+      <i class="fa-solid fa-xmark me-1"></i>
+      {{ cancelText() }}
+    </button>
+    <button class="btn btn-sm btn-danger text-white font-semibold" (click)="onConfirm()">
+      <i class="fa-solid fa-check me-1"></i>
+      {{ confirmText() }}
+    </button>
+  </c-modal-footer>
+</c-modal>

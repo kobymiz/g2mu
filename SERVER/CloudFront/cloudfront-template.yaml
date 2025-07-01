@@ -1,0 +1,259 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform:   
+  - AWS::Serverless-2016-10-31
+Description: >
+  SQM CloudFront Stack
+  
+###########################################################################
+###########             CloudFront
+########################################################################### 
+Parameters:
+  envName:
+      Type: String
+  apiGatewayID:
+    Type: String
+  apiGatewayInvokeURL:
+    Type: String
+  webAppBucketURL:
+    Type: String
+  webAppBucketName:
+    Type: String
+  webAppBucketARN:
+    Type: String      
+  certificateARN:
+    Type: String
+  apiCname:
+    Type: String
+  uiCname:
+    Type: String          
+
+Resources:
+###########################################################################
+###########             CloudFront Policies                     ###########
+###########################################################################
+
+  SQMCFResponseHeadersPolicies:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig: 
+        Name: SQMResponseHeadersPolicy
+        Comment: "SQM CloudFront Response Heafers Policy"
+        RemoveHeadersConfig: 
+          Items:
+            - Header: X-Powered-By
+        SecurityHeadersConfig: 
+          ContentSecurityPolicy: 
+            ContentSecurityPolicy: "frame-ancestors 'self' *.towersemi.com"
+            Override: True
+          ContentTypeOptions: 
+            Override: True
+          StrictTransportSecurity: 
+            AccessControlMaxAgeSec: 31536000
+            IncludeSubdomains: True
+            Override: False
+            Preload: False
+        CorsConfig:
+          OriginOverride: False
+          AccessControlAllowCredentials: False
+          AccessControlAllowHeaders: 
+            Items:
+                - "*"
+          AccessControlAllowMethods: 
+            Items:
+                - "ALL"
+          AccessControlAllowOrigins: 
+            Items:
+                - "*.towersemi.com"
+                - "*.towersemi.com:4200"
+          AccessControlMaxAgeSec: 600
+
+  AuthorizationCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties: 
+      CachePolicyConfig: 
+        Comment: Authorization Policy
+        DefaultTTL: 0
+        MaxTTL: 1
+        MinTTL: 0
+        Name: SQMAuthorizationPolicy
+        ParametersInCacheKeyAndForwardedToOrigin: 
+          CookiesConfig:
+            CookieBehavior: "none"
+          QueryStringsConfig:
+            QueryStringBehavior: "all"
+          EnableAcceptEncodingGzip: True
+          EnableAcceptEncodingBrotli: True
+          HeadersConfig:
+            HeaderBehavior: whitelist
+            Headers: 
+              - "Authorization"
+              - "x-api-key"
+              - "x-auth-token"
+###########################################################################
+###########             CloudFront Distributions                ###########
+###########################################################################
+
+  SQMAPICF:
+    Type: AWS::CloudFront::Distribution
+    DependsOn:
+      - AuthorizationCachePolicy      
+    Properties: 
+      DistributionConfig:        
+        Comment: "SQM API"
+        Aliases:
+          - !Ref apiCname          
+        ViewerCertificate:
+          AcmCertificateArn: !Ref certificateARN
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+        Enabled: True
+        DefaultCacheBehavior:
+          TargetOriginId: !Join [ "-" , ["sqm-api", !Sub "${AWS::AccountId}" ] ]
+          AllowedMethods: 
+            - GET
+            - HEAD
+            - POST
+            - OPTIONS
+            - PUT
+            - PATCH
+            - DELETE
+          Compress: True
+          DefaultTTL: 0
+          MaxTTL: 0
+          MinTTL: 0
+          ViewerProtocolPolicy: redirect-to-https
+          CachePolicyId: !Ref AuthorizationCachePolicy
+          ResponseHeadersPolicyId: !Ref SQMCFResponseHeadersPolicies
+        HttpVersion: "http2"
+        IPV6Enabled: False
+        Origins: 
+          - 
+            Id: !Join [ "-" , ["sqm-api", !Sub "${AWS::AccountId}" ] ]
+            DomainName: !Sub "${apiGatewayID}.execute-api.us-west-2.amazonaws.com"
+            OriginPath: !Sub "/${envName}"
+            CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: "https-only"
+              OriginSSLProtocols: 
+                - TLSv1.2          
+        Restrictions:
+          GeoRestriction:
+            RestrictionType: "blacklist"
+            Locations:
+              - IR # The Islamic Republic of Iran
+              - IQ # The Republic of Iraq
+              - SY # The Syrian Arab Republic
+              - RU # The Russian Federation
+              - BY # The Republic of Belarus
+              - AF # The Islamic Republic of Afghanistan
+              - KP # The Democratic People's Republic of Korea
+              - YE # The Republic of Yemen
+
+  
+  SQMFrontendCF:
+    Type: AWS::CloudFront::Distribution    
+    DependsOn:
+      - AuthorizationCachePolicy
+      - SQMFrontendBucketOAI
+    Properties: 
+      DistributionConfig:        
+        Comment: "SQM Frontend Web Application"
+        Aliases:
+          - !Ref uiCname          
+        ViewerCertificate:
+          AcmCertificateArn: !Ref certificateARN
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+        Enabled: True
+        DefaultCacheBehavior:
+          TargetOriginId: "SQMFrontend-Origin"
+          AllowedMethods: 
+            - GET
+            - HEAD            
+          Compress: True          
+          ViewerProtocolPolicy: redirect-to-https
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # Managed-CachingOptimized
+          ResponseHeadersPolicyId: !Ref SQMCFResponseHeadersPolicies
+        CacheBehaviors:
+          -
+            PathPattern: "index.html"
+            TargetOriginId:  "SQMFrontend-Origin"
+            AllowedMethods: 
+              - GET
+              - HEAD
+            Compress: True
+            ViewerProtocolPolicy: redirect-to-https
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad # Managed-CachingDisabled
+            ResponseHeadersPolicyId: !Ref SQMCFResponseHeadersPolicies
+        HttpVersion: "http2"
+        IPV6Enabled: False
+        Origins: 
+          - 
+            Id: "SQMFrontend-Origin"
+            DomainName: !Ref webAppBucketURL 
+            S3OriginConfig:
+              OriginAccessIdentity: !Join [ "", [ "origin-access-identity/cloudfront/", !Ref SQMFrontendBucketOAI ] ]
+        CustomErrorResponses:
+          -
+            ErrorCachingMinTTL: 10
+            ErrorCode: 400
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
+          -
+            ErrorCachingMinTTL: 10
+            ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
+          -
+            ErrorCachingMinTTL: 10
+            ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
+        Restrictions:
+          GeoRestriction:
+            RestrictionType: "blacklist"
+            Locations:
+              - IR # The Islamic Republic of Iran
+              - IQ # The Republic of Iraq
+              - SY # The Syrian Arab Republic
+              - RU # The Russian Federation
+              - BY # The Republic of Belarus
+              - AF # The Islamic Republic of Afghanistan
+              - KP # The Democratic People's Republic of Korea
+              - YE # The Republic of Yemen
+
+
+
+  SQMFrontendBucketOAI:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties: 
+      CloudFrontOriginAccessIdentityConfig: 
+        Comment: "SQM Frontend CloudFrontOriginAccessIdentity"
+
+
+  WebAppUIBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn:
+      - SQMFrontendBucketOAI
+    Properties:
+      Bucket: !Ref webAppBucketName
+      PolicyDocument:
+        Statement:
+          -
+            Action:
+              - s3:GetObject
+            Effect: Allow
+            Resource: !Join [ "", [ !Ref webAppBucketARN, "/*" ] ]
+            Principal:
+              CanonicalUser: !GetAtt SQMFrontendBucketOAI.S3CanonicalUserId
+
+
+##    SAM Package    ##
+##------------------##
+    ##  PROD
+# sam package --template-file cloudfront-template.yaml --output-template-file cloudfront-template_output.yaml --profile opex-dev --config-env dev-opex-cf --config-file cf-samconfig.toml
+
+##    SAM Deploy    ##
+##------------------##
+    ##  PROD  
+# sam deploy --template-file cloudfront-template_output.yaml --profile opex-dev --config-env dev-opex-cf --config-file cf-samconfig.toml

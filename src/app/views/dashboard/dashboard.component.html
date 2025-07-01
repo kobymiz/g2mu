@@ -1,0 +1,12 @@
+<div class="dashboard">
+    <h2>Welcome, {{ loggedUser?.name || 'Guest' }}!</h2>
+    <div *ngIf="loggedUser">
+        <p>Email: {{ loggedUser.email }}</p>        
+        <p>Username: {{ loggedUser.username }}</p>
+        <p>ID: {{ loggedUser.id }}</p>
+        <button (click)="logout()" type="button" class="btn btn-danger">Logout</button>
+    </div>
+    <div *ngIf="!loggedUser">
+        <p>Please log in to see your dashboard.</p>
+    </div>
+</div>

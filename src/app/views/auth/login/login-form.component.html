@@ -1,0 +1,74 @@
+<form class="space-y-6" [formGroup]="loginForm">
+    <div class="alert alert-danger d-flex align-items-center" *ngIf="error()">
+        <i class="fa fa-exclamation-triangle me-2" aria-hidden="true"></i>
+        {{error()}}
+    </div>
+    <div class="alert alert-warning" *ngIf="signInStatus()==='pending-signup-confirmation'">
+        <div class="fw-bold text-warning">
+            <i class="fa fa-exclamation-triangle me-2" aria-hidden="true"></i>
+            Your account is not yet confirmed
+        </div>
+        <div class="text-sm text-gray-800">
+            <p>To complete the registration process,please check your email for a confirmation link.</p>
+            <p>If you do not see the email, please click the button below to resend the confirmation email.</p>
+            <app-resend-confirmation-email-button [username]="loginForm.get('username')?.value" [style]="'warning'"></app-resend-confirmation-email-button>                
+        </div>                        
+    </div>
+    <div class="form-group">
+        <label for="username" class="form-check-label text-sm fw-semibold">Username</label>
+        <input
+            id="username"
+            type="text"
+            class="form-control"
+            formControlName="username"
+            placeholder="your_username"
+            [ngClass]="{'is-invalid': loginForm.get('username')?.invalid && (loginForm.get('username')?.dirty || loginForm.get('username')?.touched)}"
+        />
+        <div *ngIf="loginForm.get('username')?.invalid && (loginForm.get('username')?.dirty || loginForm.get('username')?.touched)" class="text-danger mt-1">
+            <div *ngIf="loginForm.get('username')?.errors?.['required']">
+                * Username is required.
+            </div>
+        </div>
+    </div>
+
+        <div class="form-group">
+            <label for="password" class="form-check-label text-sm fw-semibold">Password</label>
+            <input
+                id="password"
+                type="password"
+                class="form-control"
+                formControlName="password"
+                placeholder="••••••••"
+                [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)}"
+            />
+            <div *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)" class="text-danger mt-1">
+                <div *ngIf="loginForm.get('password')?.errors?.['required']">
+                    Password is required.
+                </div> 
+            </div>
+        </div>
+
+            <div class="flex items-center justify-between">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="rememberMe" formControlName="rememberMe">
+                    <label class="form-check-label text-sm fw-semibold" for="checkDefault">
+                        Remember me
+                    </label>
+                </div>                
+                <div class="text-sm">
+                    <a href="javascript:void(0)" class="font-medium text-primary hover:text-primary/80" (click)="onForgotPassword()">
+                        Forgot your password?
+                    </a>
+                </div>
+            </div>
+
+            <button type="button" class="w-full btn btn-primary" [disabled]="signInStatus() === 'signingIn' || loginForm.invalid" (click)="onSubmit()">
+                <span *ngIf="signInStatus()=== 'signingIn'" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                {{
+                    signInStatus() === 'signingIn' ? 'Signing in...'
+                    :signInStatus() === 'success' ? 'Signed in successfully!'
+                    :signInStatus() === 'error' ? 'Error signing in'
+                    :'Sign In'                    
+                }}                
+            </button>
+</form>

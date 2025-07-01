@@ -1,0 +1,133 @@
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  
+  <!-- Page Title -->
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="flex justify-center">
+      <a href="/" class="flex items-center hover:opacity-80 transition-opacity">
+        <i class="fa fa-link text-primary mr-2"></i>        
+        <span class="text-2xl font-bold">G2MU</span>
+      </a>
+    </div>
+    <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+      {{activeTab() === "login" ? "Sign in to your account" : "Create a new account"}}
+    </h2>
+    <p class="mt-2 text-center text-sm text-gray-600">
+      @if (activeTab() === "login") {      
+        <span class="me-1">Or</span>
+        <button class="font-medium text-primary hover:text-primary/80" (click)="activeTab.set('register')">
+          create a new account
+        </button>
+      } @else {
+        <span class="me-2">Already have an account?</span>
+        <button class="font-medium text-primary hover:text-primary/80" (click)="activeTab.set('login')">
+          Sign in
+        </button>
+      }      
+    </p>
+  </div>
+
+  <!-- Login / Register Form area -->
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white w-full py-8 px-4 shadow sm:rounded-lg sm:px-10 flex flex-col items-center">
+      <!-- Toggle between Loging and Register-->
+      <app-toggle-button 
+        (toggle)="activeTab.set($event)" 
+        [mode]="activeTab()"
+        [modes]="{first: {key: 'login', label: 'Login'}, second: {key: 'register', label:'Register'}}"></app-toggle-button>
+
+        <!-- Login Form-->
+        <app-login-form class="w-full" *ngIf="activeTab() === 'login'"></app-login-form>
+
+        <!-- Register Form-->
+        <app-register-form class="w-full" *ngIf="activeTab() === 'register'"></app-register-form>        
+
+        <!-- Google Login -->
+         <div class="mt-6 w-full">
+            <div class="relative">
+              <div class="absolute inset-0 flex items-center">
+                <hr class="w-full my-4" />
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-gray-500">Or </span>
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <app-google-login-button class="w-full"></app-google-login-button>
+            </div>
+          </div>
+    </div>    
+  </div>
+
+
+</div>
+
+<!-- <header class="fixed top-0 left-0 w-full z-10 transition-all duration-300 bg-transparent">
+  <div class="max-w-7xl mx-auto flex justify-between items-center py-4 px-6">
+    <div class="text-xl font-bold text-primary">
+      <a [routerLink]="['/']"><span class="logo fs-1">G2MU</span></a>
+    </div>
+  </div>
+</header>
+
+<main class="pt-24">
+  <section class="bg-gradient-to-br from-blue-50 to-white py-20 px-6">
+    <div class="max-w-3xl mx-auto text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-3">
+        Go 2 My URL - Login
+      </h1>
+      <p class="text-lg text-gray-600 mb-4">
+        Login to G2MU to start creating and managing your short links and QR Codes
+      </p>
+      <div class="p-5 mt-3 bg-dark text-white rounded-xxl w-full">
+        <div class="alert alert-danger d-flex align-items-center" *ngIf="error">
+          <i class="fa fa-exclamation-triangle me-2" aria-hidden="true"></i>
+          Login Failed - {{error}}
+        </div>
+        <form class="form text-start" [formGroup]="loginForm" (ngSubmit)="onLoginClick()">
+          <div *ngIf="loading"
+            class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20 rounded"
+            style="min-height: 100%; min-width: 100%;">
+            <div class="spinner-border text-light" role="status">
+              <span class="visually-hidden"></span>
+            </div>
+            <div class="text-light fs-3 ms-3">
+              Logging in...
+            </div>
+          </div>
+          <div class="mb-5">
+            <label for="username" class="form-label fs-3">
+              Username
+            </label>
+            <input type="email" class="form-control form-control-lg" id="username" formControlName="username"
+                name="username" placeholder="Enter the email you used to register" required
+                [ngClass]="{'is-invalid': loginForm.get('username')?.invalid && (loginForm.get('username')?.dirty || loginForm.get('username')?.touched || submitted)}" />
+              
+          </div>
+          <div class="mb-5">
+            <label for="password" class="form-label fs-3">
+              Password
+            </label>
+            <input type="password" class="form-control form-control-lg" id="password" formControlName="password"
+              name="password" placeholder="Type your password..." 
+              [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched || submitted)}"/>
+          </div>
+          <div class="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3">
+            <button class="btn btn-primary btn-lg" type="submit">
+              <i class="fa fa-sign-in me-2"></i> Login
+            </button>
+            <span class="fs-3 me-3 ms-3">OR</span>
+            <button class="btn btn-warning btn-lg" type="button" (click)="onGoogleLogin()">
+              <i class="fa-brands fa-google me-2"></i>Login with Google
+            </button>
+          </div>
+        </form>
+        <hr class="my-4" />
+        <div class="d-flex justify-content-between">
+          <a [routerLink]="['/auth/reset-password']" class="btn btn-ghost-light btn-lg">Forgot password?</a>
+          <a [routerLink]="['/auth/register']" class="btn btn-ghost-light btn-lg">Don't have an account ? Sign up</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main> -->

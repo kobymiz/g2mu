@@ -1,0 +1,21 @@
+{
+  "name": "email-layer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "postbuild": "cp package*.json dist/nodejs/node_modules/email-layer && cd dist/nodejs/node_modules/email-layer && npm ci --production"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.741.0",
+    "ejs": "^3.1.10"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.1.5",
+    "@types/node": "^22.13.1" ,
+    "typescript": "^5.7.3"
+  }
+}

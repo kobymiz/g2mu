@@ -1,0 +1,344 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform:
+  - AWS::Serverless-2016-10-31
+Description: >
+  SQM Infrastracture - Lambda - Nested Stack
+
+Parameters:
+  envName:
+    Type: String  
+  clientUrl:
+    Type: String  
+
+Globals:
+  Api:
+    OpenApiVersion: 3.0.1 # to avoid default stage creation
+  Function:
+    Timeout: 30
+    Runtime: nodejs22.x
+    Handler: index.handler      
+    Layers:
+        - !Ref requestResponseLayer  
+    Environment:
+      Variables:
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1        
+
+Resources:
+
+###########################################################################
+###########             IAM                                     ###########
+###########################################################################
+  #
+  # Lambda Policy
+  #
+  G2MULambdaPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:        
+        -
+          Effect: "Allow"
+          Action:
+            - "lambda:InvokeFunction"
+            - "lambda:InvokeAsync"
+          Resource: "*"        
+        -
+          Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "*"
+        -
+          Effect: Allow
+          Action:
+            - dynamodb:BatchGetItem
+            - dynamodb:BatchWriteItem
+            - dynamodb:PutItem
+            - dynamodb:DeleteItem
+            - dynamodb:GetItem
+            - dynamodb:Scan
+            - dynamodb:Query
+            - dynamodb:UpdateItem
+          Resource: "*"
+        -
+          Effect: Allow
+          Action:
+            - secretsmanager:GetSecretValue
+            - secretsmanager:DescribeSecret
+            - secretsmanager:*
+          Resource: "*"                        
+  #
+  # Lambda Role
+  #
+  G2MULambdaRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+              - "lambda.amazonaws.com"
+            Action: "sts:AssumeRole"
+        ManagedPolicyArns:
+          - "arn:aws:iam::aws:policy/AWSLambdaExecute"
+          - !Ref G2MULambdaPolicy
+        RoleName: G2MU_LAMBDA_ROLE
+
+###########################################################################
+###########             Authorizer                              ###########
+###########################################################################
+  AuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: CognitoJWTAuthorizer
+      Handler: authorizer.handler
+      CodeUri: ./src/authorizer/
+      MemorySize: 128
+      Environment:
+        Variables:        
+          COGNITO_REGION: eu-west-2
+          USER_POOL_ID: eu-west-2_ABC123456
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: "*"
+
+  AuthorizerPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - AuthorizerFunction
+      - G2MUApi
+    Properties:
+      FunctionName: !Ref AuthorizerFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${G2MUApi}/*/*/*
+
+###########################################################################
+###########             API Gateway                             ###########
+###########################################################################
+
+  G2MUApi:
+    Type: AWS::Serverless::Api
+    DependsOn:
+      - AuthorizerFunction
+    Properties:
+      Description: API Gateway for G2MU
+      OpenApiVersion: "3.0.1"
+      Name: g2mu-api
+      StageName: !Ref envName
+      Auth:
+        Authorizers:
+          TGSAuth:
+            FunctionArn: !GetAtt AuthorizerFunction.Arn
+            DisableFunctionDefaultPermissions: true
+            Identity:
+              ReauthorizeEvery: 0
+        DefaultAuthorizer: TGSAuth
+        AddDefaultAuthorizerToCorsPreflight: False
+      Cors:
+        AllowMethods: "'POST, GET, DELETE, PUT, OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+
+###########################################################################
+###########             Lambda Layers                           ###########
+###########################################################################
+#
+# MySQL12 Layer
+#
+  mysql12Layer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: mysql12-layer
+      Description: "MYSQL 12 Layer"
+      ContentUri: ./layers/mysql12/mysql2-layer.zip
+      CompatibleRuntimes:
+        - nodejs22.x
+
+#
+# DB Helpers Layer
+#
+  dbHelpersLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: db-helpers-layer
+      Description: "MySQL DB Helpers Layer"
+      ContentUri: ./layers/db-layer/dist/db-helper.zip
+      CompatibleRuntimes:
+        - nodejs22.x
+
+#
+# JWT Layer
+#
+  jwtLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: jwt-layer
+      Description: "JWT Layer"
+      ContentUri: ./layers/jwt-layer/dist/jwt-layer.zip
+      CompatibleRuntimes:
+        - nodejs22.x
+
+#
+# Request/Response Helpers Layer
+#
+  requestResponseLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: request-response-helpers-layer
+      Description: "Request/Response Helpers Layer"
+      ContentUri: ./layers/request-response-helpers/dist/request-response-helpers.zip
+      CompatibleRuntimes:
+        - nodejs22.x
+
+###########################################################################
+###########             Test Lambda Function                    ###########
+###########################################################################
+  AreYouThereFunction:    
+    Type: AWS::Serverless::Function
+    DependsOn:
+      - G2MULambdaRole
+    Properties:
+      FunctionName: are-you-there
+      Description: Test Get API
+      CodeUri: ./src/are-you-there
+      MemorySize: 128
+      Role: !GetAtt G2MULambdaRole.Arn
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /are-you-there
+            Method: GET
+            RestApiId: !Ref G2MUApi
+            Auth:
+              Authorizer: TGSAuth  
+
+###########################################################################
+###########             Short URL Management                    ###########
+###########################################################################
+  ### Short-URL CRUD functions ###
+  ListUrlsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: list-urls
+      CodeUri: ./src/short-urls/list
+      Handler: index.handler
+      Role: !GetAtt G2MULambdaRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: g2mu_urls
+          USERNAME_INDEX: UsernameIndex
+      Events:
+        ListUrlsApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref G2MUApi
+            Path: /urls/list
+            Method: GET
+            Auth:
+              Authorizer: TGSAuth
+
+  GetUrlFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: get-url
+      CodeUri: ./src/short-urls/get
+      Handler: index.handler
+      Role: !GetAtt G2MULambdaRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: g2mu_urls
+      Events:
+        GetUrlApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref G2MUApi
+            Path: /urls/{key}
+            Method: GET
+            Auth:
+              Authorizer: TGSAuth
+
+  PutUrlFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: put-url
+      CodeUri: ./src/short-urls/put
+      Handler: index.handler
+      Role: !GetAtt G2MULambdaRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: g2mu_urls
+      Events:
+        PutUrlApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref G2MUApi
+            Path: /urls/{key}
+            Method: PUT            
+            Auth:
+              Authorizer: TGSAuth
+
+  DeleteUrlFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: delete-url
+      CodeUri: ./src/short-urls/delete
+      Handler: index.handler
+      Role: !GetAtt G2MULambdaRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: g2mu_urls
+      Events:
+        DeleteUrlApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref G2MUApi
+            Path: /urls/{key}
+            Method: DELETE
+            Auth:
+              Authorizer: TGSAuth
+
+  CheckAvailabilityFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: check-availability
+      CodeUri: ./src/short-urls/check-availability
+      Handler: index.handler
+      Role: !GetAtt G2MULambdaRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: g2mu_urls
+      Events:
+        CheckAvailabilityApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref G2MUApi
+            Path: /urls/is-available
+            Method: POST            
+            Auth:
+              Authorizer: TGSAuth
+
+
+
+Outputs:
+  APIGatewayInvokeURL:
+    Description: "API Gateway URL"
+    Value: !Ref G2MUApi
+    Export:
+      Name: APIGatewayInvokeURL
+  ApiId:
+    Description: "ID of the API Gateway"
+    Value: !Ref G2MUApi
+    Export:
+      Name: APIGatewayId

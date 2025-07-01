@@ -1,0 +1,47 @@
+<!-- Page header-->
+<app-home-header></app-home-header>
+
+<!-- Main Section-->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+  <!-- Hero Section -->
+  <section class="text-center max-w-3xl mx-auto mb-5">
+    <div class="max-w-3xl mx-auto text-center mt-5">
+      <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+        Create Short URLs & QR Codes <span class="text-primary">Instantly</span>
+      </h1>
+      <p class="text-lg text-gray-600 mb-8">
+        Simplify your links, track clicks, and share with ease.
+      </p>
+
+      
+      <div @growDown
+        class="flex w-100 justify-content-around" *ngIf="shortUrl() != null" >
+        <app-shorturl-viewer [data]="shortUrl()" [qrCode]="qrCode()"></app-shorturl-viewer>      
+      </div>      
+
+       <!-- Sample Short URL Form-->
+      <app-sample-form></app-sample-form>      
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <app-main-features-section></app-main-features-section>
+
+  <!-- About Section -->
+  <section id="about" class="py-20 px-6 bg-gray-50">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-4">Why G2MU ?</h2>
+      <p class="text-gray-600 text-lg">
+        We provide powerful tools to simplify, monitor, and scale your link-sharing strategy. Whether you're a business
+        or an individual, our platform is designed for ease, performance, and style with fair, affordable prices plans.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact / Footer -->
+  <section id="contact" class="py-12 px-6 bg-white border-t">
+    <div class="max-w-4xl mx-auto text-center text-gray-600 text-sm">
+      &copy; 2025 G2MU. All rights reserved.
+    </div>
+  </section>
+</main>

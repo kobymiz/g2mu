@@ -1,0 +1,26 @@
+version=0.1
+#####################################
+#           DEV
+#####################################
+[dev-opex-cf.deploy.parameters]
+s3_bucket = "opex-build-905418223141"
+parameter_overrides = [
+    "ApiRegion=us-west-2",
+    "envName=dev",     
+    "apiGatewayInvokeURL=https://xl5idl01ie.execute-api.us-west-2.amazonaws.com/dev",
+    "apiGatewayID=xl5idl01ie",
+    "webAppBucketURL=sqm-frontend-905418223141.s3.us-west-2.amazonaws.com",
+    "webAppBucketName=sqm-frontend-905418223141",
+    "webAppBucketARN=arn:aws:s3:::sqm-frontend-905418223141",
+    "certificateARN=arn:aws:acm:us-east-1:905418223141:certificate/85476d88-bbce-4bad-bc74-3951a1b6eff9",
+    "apiCname=sqm-dev-api.towersemi.com",
+    "uiCname=sqm-dev.towersemi.com"
+]
+region = "us-east-1"
+stack_name = "sqm-cloudfront"
+capabilities = "CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND"
+
+
+[dev-opex-cf.package.parameters]
+s3_bucket = "opex-build-905418223141"
+s3_prefix = "cf-opex-cloudfront"

@@ -1,0 +1,45 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist/out-tsc",
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "declaration": false,
+    "experimentalDecorators": true,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "useDefineForClassFields": false,
+    "lib": [
+      "ES2022",
+      "dom",
+      "ES2023.Array",
+      "ESNext"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@g2mu/core/components": ["src/app/core/components/index.ts"],
+      "@g2mu/core/directives": ["src/app/core/directives/index.ts"],
+      "@g2mu/core/auth": ["src/app/core/auth/index.ts"],
+      "@g2mu/core/config": ["src/app/core/config/index.ts"],
+      "@g2mu/core/data": ["src/app/core/data/index.ts"],
+      "@g2mu/core/services": ["src/app/core/services/index.ts"]
+    }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true,
+    "strictStandalone": true
+  }
+}

@@ -1,0 +1,30 @@
+version=0.1
+#   DEV
+[dev-infra.sync]
+[dev-infra.sync.parameters]
+watch = true
+s3_bucket = "g2mu-build-895926388622"
+s3_prefix = "cf-main"
+parameter_overrides = [
+    "envName=dev",    
+    "apigwAuthLambdaARN=arn:aws:lambda:us-west-2:881561917343:function:tgs_autorizer_internal"
+    ]
+region = "eu-west-2"
+stack_name = "g2mu-infrastracture"
+
+
+[dev-infra.deploy.parameters]
+s3_bucket = "g2mu-build-895926388622"
+parameter_overrides = [
+    "envName=dev",    
+    "apigwAuthLambdaARN=arn:aws:lambda:us-west-2:881561917343:function:tgs_autorizer_internal",    
+    "clientUrl=https://dev.g2mu.com",
+    "fromEmailAddress=kobymiz@gmail.com",    
+]
+region = "eu-west-2"
+stack_name = "g2mu-infrastracture"
+capabilities = "CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND"
+
+[dev-infra.package.parameters]
+s3_bucket = "g2mu-build-895926388622"
+s3_prefix = "cf-main"

@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform:  
+  - AWS::Serverless-2016-10-31
+Description: >
+  "G2MU.com backend infrastructure"
+
+Parameters:
+  envName:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - qa
+      - prod
+  apigwAuthLambdaARN:
+    Type: String  
+  clientUrl:
+    Type: String
+  fromEmailAddress:
+    Type: String  
+  
+Resources:
+
+###########################################################################
+###########             DynamoDB tables
+###########################################################################
+  CFStackDynamoDB:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./DB/dynamo-db.template.yaml
+      Parameters:
+        envName: !Ref "envName"                
+
+###########################################################################
+###########             Lambda
+###########################################################################
+  CFStackLambda:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./Lambda/lambda-template.yaml
+      Parameters:
+        envName: !Ref "envName"
+        clientUrl: !Ref clientUrl
+
+
+##    SAM Package    ##
+##------------------##
+    ##  DEV
+# sam package --template-file template.yaml --output-template-file template_output.yaml --profile G2MU --config-env dev-infra --config-file samconfig.toml  
+
+##    SAM Deploy    ##
+##------------------##
+    ##  DEV
+# sam deploy --template-file template_output.yaml --profile G2MU --config-env dev-infra --config-file samconfig.toml
+    
+
+##  Fast
+# sam sync --config-file samconfig.toml --config-env dev-infra --watch --no-dependency-layer --code --build-in-source --profile G2MU

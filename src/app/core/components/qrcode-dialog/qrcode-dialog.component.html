@@ -1,0 +1,59 @@
+<!-- qr-code-dialog.component.html -->
+<div *ngIf="open()" class="fixed inset-0 z-50 flex items-center justify-center" @fadeInOut>
+  <div class="absolute inset-0 bg-black/50" (click)="close()" @fadeInOut></div>
+  <div @fadeInOut
+    class="relative mx-auto mt-16 w-full max-w-sm bg-white rounded-lg p-6 shadow-lg"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="flex items-center justify-between">
+      <h2 class="flex items-center justify-center gap-2 text-lg font-medium">
+        <i class="fa-solid fa-qrcode h-5 w-5"></i>
+        QR Code
+      </h2>
+      <button class="text-gray-500 hover:text-gray-700" (click)="close()">&times;</button>
+    </header>
+    <p class="mt-1 text-sm text-gray-600">
+      QR code for <span class="font-mono">{{ urlKey() }}</span>
+    </p>
+
+    <div class="flex flex-col items-center gap-4 py-4">
+      <div class="relative">
+        <canvas
+          #canvasEl
+          [class.border]="true"
+          [class.rounded-lg]="true"
+          [class.opacity-50]="isGenerating()"
+          style="max-width:100%;height:auto;"
+        ></canvas>
+        <div
+          *ngIf="isGenerating()"
+          class="absolute inset-0 flex items-center justify-center"
+        >
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </div>
+      <div class="text-center text-sm text-gray-600">
+        <p class="font-medium">Scan to visit:</p>
+        <p class="font-mono text-xs break-all">{{ shortUrl() }}</p>
+      </div>
+      <div class="flex gap-2 w-full">
+        <button
+          class="flex-1 btn btn-outline-light text-sm font-semibold text-gray-800 border-gray-300"
+          [disabled]="isGenerating()"
+          (click)="downloadQRCode()"
+        >
+          <i class="fa-solid fa-download h-4 w-4 mr-2"></i>
+          Download PNG
+        </button>
+        <button
+          class="lex-1 btn btn-outline-light text-sm font-semibold text-gray-800 border-gray-300"
+          [disabled]="isGenerating()"
+          (click)="copyQRCode()"
+        >
+          <i class="fa-solid fa-copy h-4 w-4 mr-2"></i>
+          Copy to Clipboard
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+<form class="space-y-6" [formGroup]="createUrlForm">
+    <!-- <div class="alert alert-danger d-flex align-items-center" *ngIf="error()">
+        <i class="fa fa-exclamation-triangle me-2" aria-hidden="true"></i>
+        {{error()}}
+    </div> -->
+    <div class="form-group">
+        <label for="longUrl" class="form-check-label text-sm fw-semibold text-gray-900 mb-2">Long URL</label>
+        <input id="longUrl" type="text" class="form-control" formControlName="longUrl"
+            placeholder="https://example.com/very/long/url/that/needs/shortening"
+            [ngClass]="{'is-invalid': createUrlForm.get('longUrl')?.invalid && (createUrlForm.get('longUrl')?.dirty || createUrlForm.get('longUrl')?.touched)}" />
+        <div *ngIf="createUrlForm.get('longUrl')?.invalid && (createUrlForm.get('longUrl')?.dirty || createUrlForm.get('longUrl')?.touched)"
+            class="text-danger mt-1">
+            <div *ngIf="createUrlForm.get('longUrl')?.errors?.['required']">
+                * Long URL is required.
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6 w-full">
+        <div class="form-group sm:col-span-3">
+            <label for="title" class="form-check-label text-sm fw-semibold text-gray-900 mb-2">Title</label>
+            <input id="title" type="text" class="form-control" formControlName="title" placeholder="My Awesome URL"
+                [ngClass]="{'is-invalid': createUrlForm.get('title')?.invalid && (createUrlForm.get('title')?.dirty || createUrlForm.get('title')?.touched)}" />
+
+            <div *ngIf="createUrlForm.get('title')?.invalid && (createUrlForm.get('title')?.dirty || createUrlForm.get('title')?.touched)"
+                class="text-danger mt-1">
+                <div *ngIf="createUrlForm.get('title')?.errors?.['required']">
+                    * Title is required.
+                </div>
+            </div>
+        </div>
+        <div class="form-group sm:col-span-3">
+            <label for="customUrl" class="form-check-label text-sm fw-semibold text-gray-900 mb-2">
+                Custom URL Path
+            </label>
+            <div class="input-group w-3/4 mb-1">
+                <div class="input-group-text">https://g2mu.com/</div>
+                <input id="customUrl" type="text" class="form-control" formControlName="customUrl"
+                    placeholder="my-suffix"
+                    appTypeahead
+                    [minLength]="4"
+                    [debounceTime]="300"
+                    [typeaheadFn] = "checkShortUrl"
+                    [ngClass]="{'is-invalid': createUrlForm.get('customUrl')?.invalid && (createUrlForm.get('customUrl')?.dirty || createUrlForm.get('customUrl')?.touched)}" />
+                <div class="input-group-text">
+                    <i class="fa-regular fa-circle-question" title="Start type your custom URL to check availability" *ngIf="shortUrlStatus() === ''"></i>
+                    <i class="fa-regular fa-circle-check text-success" title="This URL is available" *ngIf="shortUrlStatus() === 'available'"></i>
+                    <i class="fa-regular fa-circle-xmark text-danger" title="This URL is not available" *ngIf="shortUrlStatus() === 'unavailable'"></i>
+                    <span class="spinner-border spinner-border-sm me-2" role="status" *ngIf="shortUrlStatus() === 'checking'"></span>
+                </div>
+                <button type="button" class="btn btn-sm btn-ghost-dark" title="Regenerate Custom URL" (click)="generateShortUrl()" [disabled]="shortUrlStatus() === 'checking'" >
+                    <i class="fa fa-refresh"></i>
+                </button>                
+            </div>       
+            <span class="text-muted text-xs">
+                    Available with paid plan. <a href="/app/pricing/plans" class="text-primary hover:underline">Upgrade now</a>
+                </span>     
+            <div *ngIf="createUrlForm.get('customUrl')?.invalid && (createUrlForm.get('customUrl')?.dirty || createUrlForm.get('customUrl')?.touched)"
+                class="text-danger mt-1">
+                <div *ngIf="createUrlForm.get('customUrl')?.errors?.['required']">
+                    * Custom URL is required.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="longUrl" class="form-check-label text-sm fw-semibold text-gray-900 mb-2">Description</label>
+        <textarea id="description" class="form-control" formControlName="description"
+            placeholder="Brief description of this link (optional)"
+            [ngClass]="{'is-invalid': createUrlForm.get('description')?.invalid && (createUrlForm.get('description')?.dirty || createUrlForm.get('description')?.touched)}"
+            rows="3">
+        </textarea>
+    </div>
+    <div class="flex justify-end space-x-3">
+         <button type="button" class="btn btn-outline-secondary" (click)="clearForm()">
+            Clear
+        </button>    
+        <button type="button" class="btn btn-primary" [disabled]="createUrlForm.invalid || submitFormStatus() === 'submitting' || shortUrlStatus() !== 'available'" (click)="submitForm()">
+            <span class="fa fa-link me-2" aria-hidden="true" *ngIf="submitFormStatus()==='idle'"></span>
+            <span *ngIf="submitFormStatus() === 'submitting'" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            <span *ngIf="submitFormStatus() === 'success'" class="fa fa-check text-success me-2" aria-hidden="true"></span>
+            <span *ngIf="submitFormStatus() === 'error'" class="fa fa-times text-danger me-2" aria-hidden="true"></span>
+            {{
+                    submitFormStatus() === 'success' ? 'URL Created Successfully!'
+                    :submitFormStatus() === 'error' ? 'Error Saving Url'
+                    :submitFormStatus() === 'submitting' ? 'Saving Url..'                                        
+                    :'Create Short URL'                    
+                }}
+            
+        </button>           
+    </div>
+</form>
+
+<c-modal #successModal alignment="center" id="successModal" [visible]="false" [backdrop]="'static'">    
+    <c-modal-body>
+        <app-shorturl-viewer [data]="createdUrlInfo()" [qrCode]="createdUrlQRCode() || ''" ></app-shorturl-viewer>                    
+        <div class="mt-3 d-flex flex-column gap-2">
+            <button type="button" class="btn btn-primary" (click)="postCreateUrlAction.set('createAnother')">Create
+                Another Short URL</button>
+            <button type="button" class="btn btn-outline-success" (click)="postCreateUrlAction.set('viewUrlPage')">Open
+                URL View Page</button>
+            <button type="button" class="btn btn-outline-secondary"
+                (click)="postCreateUrlAction.set('urlListPage')">Return to URLs List</button>
+        </div>    
+    </c-modal-body>
+</c-modal>

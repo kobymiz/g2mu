@@ -1,0 +1,16 @@
+// lambda-layer/nodejs/tsconfig.json
+
+{
+    "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "outDir": "./dist/nodejs/node_modules/request-response-helpers",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true
+  },
+    "include": ["./src"]
+  }

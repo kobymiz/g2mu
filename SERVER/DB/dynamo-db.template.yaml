@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform:
+  - AWS::Serverless-2016-10-31
+Description: >
+  G2MU Infrastracture - DynamoDB - Nested Stack
+  
+Parameters:
+  envName:
+    Type: String  
+
+
+Resources:
+  G2muUrlsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: g2mu_urls
+      BillingMode: PAY_PER_REQUEST  # On-demand pricing, change to PROVISIONED if needed
+      AttributeDefinitions:
+        - AttributeName: key
+          AttributeType: S
+        - AttributeName: username
+          AttributeType: S
+      KeySchema:
+        - AttributeName: key
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: UsernameIndex
+          KeySchema:
+            - AttributeName: username
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      Tags:
+        - Key: Name
+          Value: g2mu_urls
+  
+  SubscriptionPlansTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: subscription_plans
+      BillingMode: PAY_PER_REQUEST  # On-demand pricing, change to PROVISIONED if needed
+      AttributeDefinitions:
+        - AttributeName: name
+          AttributeType: S        
+      KeySchema:
+        - AttributeName: name
+          KeyType: HASH      
+      Tags:
+        - Key: Name
+          Value: subscription_plans
+
+  SubscriptionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: subscriptions
+      BillingMode: PAY_PER_REQUEST  # On-demand pricing, change to PROVISIONED if needed
+      AttributeDefinitions:
+        - AttributeName: subscription_id
+          AttributeType: S
+        - AttributeName: username
+          AttributeType: S
+      KeySchema:
+        - AttributeName: subscription_id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: UsernameIndex
+          KeySchema:
+            - AttributeName: username
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      Tags:
+        - Key: Name
+          Value: subscriptions
+        

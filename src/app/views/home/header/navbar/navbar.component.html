@@ -1,0 +1,37 @@
+<c-navbar colorScheme="light" expand="md">
+  <c-container fluid>
+    <c-navbar-nav class="me-auto mb-2 mb-lg-0">
+
+      <c-dropdown variant="nav-item" [popper]="false" class="me-3"
+        [visible]="isFeaturesOpen"
+        (mouseenter)="isFeaturesOpen = true" 
+        (mouseleave)="isFeaturesOpen = false">
+        <a cDropdownToggle cNavLink class="fw-medium {{menuItemTextColor()}}">
+          Features          
+        </a>
+        <app-features-menu cDropdownMenu></app-features-menu>
+      </c-dropdown>
+
+      <c-dropdown variant="nav-item" [popper]="false" class="me-3"
+        [visible]="isUsecasesOpen"
+        (mouseenter)="isUsecasesOpen = true" 
+        (mouseleave)="isUsecasesOpen = false">
+        <a cDropdownToggle cNavLink class="fw-medium {{menuItemTextColor()}}">
+          Use Cases
+        </a>
+        <app-usecases-menu cDropdownMenu></app-usecases-menu>
+      </c-dropdown>
+
+      <c-dropdown variant="nav-item" [popper]="false"
+        [visible]="isPricingOpen"
+        (mouseenter)="isPricingOpen = true" 
+        (mouseleave)="isPricingOpen = false">
+        <a cDropdownToggle cNavLink class="fw-medium {{menuItemTextColor()}}">
+          Pricing
+        </a>
+        <app-pricing-menu cDropdownMenu></app-pricing-menu>
+      </c-dropdown>
+
+    </c-navbar-nav>
+  </c-container>
+</c-navbar>

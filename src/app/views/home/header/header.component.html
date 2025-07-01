@@ -1,0 +1,23 @@
+<header
+  class="fixed top-0 left-0 w-full z-10 transition-all duration-300"
+  [ngClass]="{
+    'bg-light shadow-md': isScrolled,
+    'bg-transparent': !isScrolled
+  }"
+>
+  <div class="max-w-7xl mx-auto flex justify-between items-center py-4 px-6">
+    <div class="text-xl font-bold text-primary">
+        <span class="logo fs-1">G2MU</span>
+    </div>
+    <app-navbar></app-navbar>        
+    
+        <div>
+            <a [routerLink]="['/auth/login']" class="btn btn-outline-primary me-3">
+              <i class="fa fa-sign-in me-2"></i> Log in
+            </a>
+            <a href="/auth/register" class="btn btn-outline-success" >
+                <i class="fa fa-user-plus me-2"></i> Sign up
+            </a>
+        </div>
+  </div>
+</header>
