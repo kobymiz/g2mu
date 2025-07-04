@@ -328,7 +328,45 @@ Resources:
             Method: POST            
             Auth:
               Authorizer: TGSAuth
+  
+###########################################################################
+###########             Subscription Plans Master Data          ###########
+###########################################################################  
+  ListSubscriptionPlansFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: list-subscription-plans
+      CodeUri: ./src/subscription-plans/list
+      Handler: index.handler
+      Role: !GetAtt G2MULambdaRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: subscription_plans          
+      Events:
+        ListSPApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref G2MUApi
+            Path: /plans/list
+            Method: GET            
 
+  GetSubscriptionPlanFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: get-subscription-plans
+      CodeUri: ./src/subscription-plans/get
+      Handler: index.handler
+      Role: !GetAtt G2MULambdaRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: subscription_plans
+      Events:
+        GetSPApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref G2MUApi
+            Path: /plans/{key}
+            Method: GET            
 
 
 Outputs:

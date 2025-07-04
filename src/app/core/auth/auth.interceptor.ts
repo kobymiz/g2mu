@@ -8,7 +8,7 @@ import {
   HTTP_INTERCEPTORS
 } from '@angular/common/http';
 import { Observable, from } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import * as Auth from '@aws-amplify/auth';
 
 /**
@@ -20,8 +20,7 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(
     req: HttpRequest<unknown>,
     next: HttpHandler
-  ): Observable<HttpEvent<unknown>> {
-    // Get current Cognito session
+  ): Observable<HttpEvent<unknown>> {  
     return from(Auth.fetchAuthSession()).pipe(
       switchMap(session => {
         
@@ -33,8 +32,11 @@ export class AuthInterceptor implements HttpInterceptor {
           }
         });        
         return next.handle(authReq);
+      }),
+      catchError(error => {
+        return next.handle(req);
       })
-    );
+    )
   }
 }
 

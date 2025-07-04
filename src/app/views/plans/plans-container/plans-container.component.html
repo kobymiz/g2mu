@@ -2,194 +2,103 @@
   <div class="p-6 pb-0">
     <div class="flex justify-center">
       <div class="flex flex-col items-center w-full">
+        <!---->
+        <!-- Select Monthly/Annyally-->
+        <!---->
         <app-toggle-button (toggle)="period.set($event)" [mode]="period()"
           [modes]="{first: {key: 'monthly', label: 'Monthly'}, second: {key: 'annually', label:'Annually'}}">
         </app-toggle-button>
+        <!---->
+        <!-- Annual encouragement-->
+        <!---->
         <div class="w-full flex justify-center mb-4">
           <span *ngIf="period() === 'annually'"
             class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-sm font-medium bg-green-100 text-green-800">
             Purchase Annual plan and enjoy 33% saving compared to monthly billing.
           </span>
+          <!---->
+        <!-- Monthly benefit-->
+        <!---->
           <span *ngIf="period() === 'monthly'"
             class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-sm font-medium bg-blue-100 text-blue-800">
             Purchase Monthly plan and enjoy cancellation anytime.
           </span>
         </div>
-
-        <div class="w-full flex flex-row gap-6 justify-center">
-          <div key="free" class="rounded-lg p-6 flex flex-col relative border-2 border-primary w-full max-w-sm">
-            <!-- Popular Badge-->
-            <div class="absolute top-0 right-0 transform translate-x-2 -translate-y-2">
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary text-white">
-                POPULAR
-              </span>
-            </div>
-
-            <h3 class="text-lg font-medium text-gray-900">Standard</h3>
-            <div class="mt-4 flex items-baseline">
-              <span class="text-3xl font-extrabold tracking-tight text-gray-900">
-                {{20 | currency:'USD':'symbol':'1.0-0'}}
-              </span>
-              <span class="ml-1 text-sm font-medium text-gray-500">
-                month
-              </span>
-            </div>
-            <p class="text-sm text-green-600 font-medium">
-              Billed annually {{(20 * 12) | currency:'USD':'symbol':'1.0-0'}}/year
-            </p>
-            <p class="text-sm text-gray-600 font-medium">
-              Minimum 6 users
-            </p>
-            <p class="mt-4 text-sm text-gray-500">
-              Everything you need for professional URL management.
-            </p>
-
-            <ul role="list" class="mt-6 space-y-3 flex-1">
-              <!-- <PlanFeature key={featureIndex} included={true}>
-                    {feature}
-                  </PlanFeature> -->
-            </ul>
-
-            <div class="mt-6 space-y-2">
-              <button type="button" class="btn btn-outline-success w-full">
-                Start 60 days trial
-              </button>
-
-              <button type="button" class="btn btn-primary w-full">
-                Sign Up
-              </button>
-            </div>
-          </div>
-
-          <div key="free" class="border rounded-lg p-6 flex flex-col relative border-primary w-full max-w-sm">            
-
-            <h3 class="text-lg font-medium text-gray-900">Standard</h3>
-            <div class="mt-4 flex items-baseline">
-              <span class="text-3xl font-extrabold tracking-tight text-gray-900">
-                {{20 | currency:'USD':'symbol':'1.0-0'}}
-              </span>
-              <span class="ml-1 text-sm font-medium text-gray-500">
-                month
-              </span>
-            </div>
-            <p class="text-sm text-green-600 font-medium">
-              Billed annually {{(20 * 12) | currency:'USD':'symbol':'1.0-0'}}/year
-            </p>
-            <p class="text-sm text-gray-600 font-medium">
-              Minimum 6 users
-            </p>
-            <p class="mt-4 text-sm text-gray-500">
-              Everything you need for professional URL management.
-            </p>
-
-            <ul role="list" class="mt-6 space-y-3 flex-1">
-              <!-- <PlanFeature key={featureIndex} included={true}>
-                    {feature}
-                  </PlanFeature> -->
-            </ul>
-
-            <div class="mt-6 space-y-2">
-              <button type="button" class="btn btn-outline-success w-full">
-                Start 60 days trial
-              </button>
-
-              <button type="button" class="btn btn-primary w-full">
-                Sign Up
-              </button>
-            </div>
-          </div>
-
-          <div key="free" class="border rounded-lg p-6 flex flex-col relative border-primary w-full max-w-sm">            
-
-            <h3 class="text-lg font-medium text-gray-900">Standard</h3>
-            <div class="mt-4 flex items-baseline">
-              <span class="text-3xl font-extrabold tracking-tight text-gray-900">
-                {{20 | currency:'USD':'symbol':'1.0-0'}}
-              </span>
-              <span class="ml-1 text-sm font-medium text-gray-500">
-                month
-              </span>
-            </div>
-            <p class="text-sm text-green-600 font-medium">
-              Billed annually {{(20 * 12) | currency:'USD':'symbol':'1.0-0'}}/year
-            </p>
-            <p class="text-sm text-gray-600 font-medium">
-              Minimum 6 users
-            </p>
-            <p class="mt-4 text-sm text-gray-500">
-              Everything you need for professional URL management.
-            </p>
-
-            <ul role="list" class="mt-6 space-y-3 flex-1">
-              <!-- <PlanFeature key={featureIndex} included={true}>
-                    {feature}
-                  </PlanFeature> -->
-            </ul>
-
-            <div class="mt-6 space-y-2">
-              <button type="button" class="btn btn-outline-success w-full">
-                Start 60 days trial
-              </button>
-
-              <button type="button" class="btn btn-primary w-full">
-                Sign Up
-              </button>
-            </div>
-          </div>
-
-          <div key="free" class="border rounded-lg p-6 flex flex-col relative border-primary w-full max-w-sm">            
-
-            <h3 class="text-lg font-medium text-gray-900">Standard</h3>
-            <div class="mt-4 flex items-baseline">
-              <span class="text-3xl font-extrabold tracking-tight text-gray-900">
-                {{20 | currency:'USD':'symbol':'1.0-0'}}
-              </span>
-              <span class="ml-1 text-sm font-medium text-gray-500">
-                month
-              </span>
-            </div>
-            <p class="text-sm text-green-600 font-medium">
-              Billed annually {{(20 * 12) | currency:'USD':'symbol':'1.0-0'}}/year
-            </p>
-            <p class="text-sm text-gray-600 font-medium">
-              Minimum 6 users
-            </p>
-            <p class="mt-4 text-sm text-gray-500">
-              Everything you need for professional URL management.
-            </p>
-
-            <ul role="list" class="mt-6 space-y-3 flex-1">
-              <!-- <PlanFeature key={featureIndex} included={true}>
-                    {feature}
-                  </PlanFeature> -->
-            </ul>
-
-            <div class="mt-6 space-y-2">
-              <button type="button" class="btn btn-outline-success w-full">
-                Start 60 days trial
-              </button>
-
-              <button type="button" class="btn btn-primary w-full">
-                Sign Up
-              </button>
-            </div>
-          </div>
+        <!---->
+        <!-- Loading Spinner-->
+        <!---->
+        <div class="w-full flex justify-center my-8" *ngIf="loading()">
+          <span class="inline-flex items-center">
+            <i class="fa fa-spinner fa-spin text-primary text-2xl mr-2"></i>
+            <span class="text-gray-600 text-lg">Loading plans...</span>
+          </span>
         </div>
 
-      </div>
+        <!---->
+        <!-- Plans List-->
+        <!---->
+        <div class="w-full flex flex-row gap-6 justify-center" *ngIf="!loading()">
+          @for(plan of items(); track plan) {                           
+            @let monthlyPrice = period() === 'monthly' ? plan.price.monthly : plan.price.yearly;
+            @let yearlyPrice = monthlyPrice*12;
+            @let billingPeriodLabel = plan.userBasedPricing ? '/user/month' : '/month';
+            @let billingPeriodLabelAnnyal = plan.userBasedPricing ? 'user/year' : 'year';
+            <div key="free" class="rounded-lg p-6 flex flex-col relative border-2 w-full max-w-sm" [ngClass]="{'border-primary': plan.highlight}">
+              <!-- Popular Badge-->
+              <div class="absolute top-0 right-0 transform translate-x-2 -translate-y-2" *ngIf="plan.badge">
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary text-white">
+                {{ plan.badge?.toUpperCase() }}
+              </span>
+              </div>
 
-      <!-- <Tabs value={billingCycle} onValueChange={(value) => setBillingCycle(value as 'monthly' | 'annually')}>
-            <TabsList class="grid w-full grid-cols-2">
-              <TabsTrigger value="monthly">Monthly</TabsTrigger>
-              <TabsTrigger value="annually">
-                Annually
-                <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                  Save 33%
-                </span>
-              </TabsTrigger>
-            </TabsList>
-          </Tabs> -->
+              <h3 class="text-lg font-medium text-gray-900">{{plan.name}} Plan</h3>
+              <div class="mt-4 flex items-baseline">
+              <span class="text-3xl font-extrabold tracking-tight text-gray-900">
+                {{monthlyPrice | currency:'USD':'symbol':'1.0-0'}}
+              </span>              
+              <span class="ml-1 text-sm font-medium text-gray-500">
+                {{billingPeriodLabel}}
+              </span>
+              </div>
+              <p class="text-sm text-green-600 font-medium" *ngIf="period() ==='annually'">
+                Billed annually {{yearlyPrice | currency:'USD':'symbol':'1.0-0'}}/{{billingPeriodLabelAnnyal}}
+              </p>
+              <p class="text-sm text-blue-600 font-medium" *ngIf="period() ==='monthly'">
+                Billed monthly until cancelled
+              </p>
+              <p class="text-sm text-gray-600 font-medium" *ngIf="plan.userBasedPricing">
+                @if(plan.maxUsers > 1 && plan.minUsers === 1) {
+                  Maximum {{plan.maxUsers}} users
+                } @else if(plan.minUsers >  1) {
+                  Minimum {{plan.minUsers}} users
+                }                              
+              </p>
+              <p class="mt-4 text-sm text-gray-500">
+                {{plan.description}}
+              </p>
+
+              <ul role="list" class="mt-6 space-y-3 flex-1">
+                @for(feature of plan.features; track feature) {
+                  <li class="flex items-start">
+                  <i class="fa fa-check text-green-500 flex-shrink-0 mt-0.5 h-4 w-4"></i>
+                  <span class="ml-3 text-sm">{{feature}}</span>            
+                </li>
+                }                 
+              </ul>
+
+              <div class="mt-6 space-y-2">
+              <button type="button" class="btn btn-outline-success w-full" *ngIf="plan.trialPeriodDays || 0 > 0">
+                Start 60 days trial
+              </button>
+
+              <button type="button" class="btn btn-primary w-full">
+                Sign Up
+              </button>
+              </div>
+            </div>     
+          }     
+        </div>               
     </div>
   </div>
 </div>

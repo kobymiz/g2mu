@@ -1,8 +1,8 @@
 <!-- Page header-->
-<app-home-header></app-home-header>
+<app-home-header *ngIf="!isLoggedIn()"></app-home-header>
 
 <!-- Main Section-->
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" [class.py-20]="!isLoggedIn()">
   <!-- Hero Section -->
   <section class="text-center max-w-3xl mx-auto mb-5">
     <div class="max-w-3xl mx-auto text-center mt-5">

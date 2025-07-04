@@ -13,8 +13,8 @@ export type SubscriptionPlan = {
     updatedAt: Date;
     trialPeriodDays?: number; // Optional field for trial period
     userBasedPricing?:boolean
-    minUsers?: number; // Minimum number of users for the plan
-    maxUsers?: number; // Maximum number of users for the plan
+    minUsers: number; // Minimum number of users for the plan
+    maxUsers: number; // Maximum number of users for the plan
     badge?: string; // Optional badge for the plan
     highlight?: boolean; // Optional highlight for the plan
 }

@@ -48,6 +48,11 @@ export const routes: Routes = [
       //   pathMatch: 'full'
       // },
       {
+        path: 'plans',
+        loadComponent: () => import('./views/plans/plans.component').then(m => m.PlansComponent),    
+        pathMatch: 'full'    
+      },  
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
