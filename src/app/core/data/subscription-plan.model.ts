@@ -15,6 +15,8 @@ export type SubscriptionPlan = {
     userBasedPricing?:boolean
     minUsers: number; // Minimum number of users for the plan
     maxUsers: number; // Maximum number of users for the plan
+    maxClicks: number; // Maximum number of clicks for the plan
+    maxLinks: number; // Maximum number of links for the plan
     badge?: string; // Optional badge for the plan
     highlight?: boolean; // Optional highlight for the plan
 }
