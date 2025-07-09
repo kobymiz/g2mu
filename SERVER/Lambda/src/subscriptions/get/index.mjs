@@ -1,4 +1,3 @@
-// src/get/index.js
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
   DynamoDBDocumentClient,
@@ -23,7 +22,7 @@ export const handler = async (event) => {
   try {
       const command = new GetCommand({
         TableName: TABLE,       
-        Key: { name: key }         
+        Key: { subscription_id: key }         
       });
   
       const {item} = await docClient.send(command);
@@ -36,6 +35,6 @@ export const handler = async (event) => {
       
     } catch (err) {
       console.error(err);
-      return getResponseError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Failed to get Subscription Plan");
+      return getResponseError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Failed to get Subscription");
     }
 };

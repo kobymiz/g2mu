@@ -29,14 +29,21 @@ export const handler = async (event) => {
       ExpressionAttributeValues: { ':u': username }
     });
 
-    const result = await docClient.send(command);
+    const {Items} = await docClient.send(command);
 
-    const response = getResponseSuccess(JSON.stringify(result.Items));
+    if(Items.length === 0) {
+      return getResponseError(HttpStatusCode.NOT_FOUND, "No subscriptions found for this user");
+    }
+    
+    // Sort Items by createdDate ascending and take the earliest item
+    const earliestItem = (Items || []).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))[0];
+
+    const response = getResponseSuccess(JSON.stringify(earliestItem));
     console.log('Response:', response);
     return response;
     
   } catch (err) {
     console.error(err);
-    return getResponseError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Failed to list subscriptions");
+    return getResponseError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Failed to get the latest subscription");
   }
 };

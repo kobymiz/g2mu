@@ -24,6 +24,8 @@ export type Subscription = {
     }    
 
     active: boolean;
+    deleted?: boolean;
+    deletedAt?: number;
 }
 
 

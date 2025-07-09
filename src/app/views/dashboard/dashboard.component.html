@@ -1,12 +1,43 @@
-<div class="dashboard">
-    <h2>Welcome, {{ loggedUser?.name || 'Guest' }}!</h2>
-    <div *ngIf="loggedUser">
-        <p>Email: {{ loggedUser.email }}</p>        
-        <p>Username: {{ loggedUser.username }}</p>
-        <p>ID: {{ loggedUser.id }}</p>
-        <button (click)="logout()" type="button" class="btn btn-danger">Logout</button>
-    </div>
-    <div *ngIf="!loggedUser">
-        <p>Please log in to see your dashboard.</p>
-    </div>
-</div>
+<!-- dashboard.component.html -->
+<app-grid-container [cols]="12" [cols-md]="6" [cols-xs]="1">
+  <!-- Row 1 -->
+  <app-widget-container [cols]="3" [cols-md]="2" [cols-xs]="1">
+    <app-widget title="Chart 1">
+      <!-- your widget content here -->      
+      <canvas><!-- ... --></canvas>
+    </app-widget>
+  </app-widget-container>
+  <app-widget-container [cols]="3" [cols-md]="2" [cols-xs]="1">
+    <app-widget title="Chart 2">
+      <!-- your widget content here -->      
+      <canvas><!-- ... --></canvas>
+    </app-widget>
+  </app-widget-container>
+  <app-widget-container [cols]="3" [cols-md]="2" [cols-xs]="1">
+    <app-widget  title="Chart 3">
+      <!-- your widget content here -->      
+      <canvas><!-- ... --></canvas>
+    </app-widget>
+  </app-widget-container>
+
+
+  <app-widget-container [cols]="9"  [cols-md]="6" [cols-xs]="1">
+    <app-widget  title="Stats">      
+      <!-- ... -->
+    </app-widget>
+  </app-widget-container>
+
+  <!-- Row 2 -->
+  <app-widget-container [cols]="6"  [cols-md]="3" [cols-xs]="1">
+    <app-widget title="Users">      
+    </app-widget>
+  </app-widget-container>
+  
+  <!-- Row 3 -->
+  <app-widget-container [cols]="6" [cols-md]="3" [cols-xs]="1">
+    <app-widget title="Feed">      
+    </app-widget>
+  </app-widget-container>
+
+  <!-- etc… -->
+</app-grid-container>

@@ -4,11 +4,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {signOut} from '@aws-amplify/auth';
 import { User } from '@g2mu/core/auth';
+import { GridContainerComponent, WidgetComponent, WidgetContainerComponent } from '@g2mu/core/components';
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
-    imports: [CommonModule],
+    imports: [CommonModule, GridContainerComponent, WidgetContainerComponent, WidgetComponent],
 })
 export class DashboardComponent implements OnInit {    
     loggedUser: User | null = null;
