@@ -30,6 +30,10 @@ export class RedirectService {
   redirectAfterSignout(){        
     this.router.navigateByUrl(DEFAULT_REDIRECT_URL);
   }
+
+  redirectToAbsoluteURL(url: string) {
+    window.location.href = url;
+  }
 }
 
 

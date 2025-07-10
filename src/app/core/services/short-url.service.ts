@@ -52,7 +52,7 @@ export class ShortUrlService {
 
     public generateKey = (): string => {
         return nanoid();    
-    }
+    }    
 
     public addDomainToKey = (key: string) =>{
         return `${DOMAIN}/${key}`;
@@ -84,6 +84,12 @@ export class ShortUrlService {
             throw error;
         }
     }    
+}
+
+export const isValidShortURLKey = (key: string): boolean => {
+    // Check if the key is a valid nanoid format
+    const nanoidRegex = /^[0-9a-zA-Z_-]+$/; // Adjust the regex based on your nanoid configuration
+    return nanoidRegex.test(key);
 }
 
 // Provide the service using the token

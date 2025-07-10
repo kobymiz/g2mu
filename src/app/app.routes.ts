@@ -1,5 +1,7 @@
 import { AuthGuard } from './core/auth/auth.guard';
 import { Routes } from '@angular/router';
+import { slugMatcher } from './views/slug-lookup/slug-matcher';
+import { provideShortUrlService } from './core/services';
 
 export const routes: Routes = [
   {
@@ -51,7 +53,7 @@ export const routes: Routes = [
         path: 'plans',
         loadComponent: () => import('./views/plans/plans.component').then(m => m.PlansComponent),    
         pathMatch: 'full'    
-      },  
+      },        
       {
         path: '',
         redirectTo: 'dashboard',
@@ -64,5 +66,11 @@ export const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },  
+  {
+    matcher: slugMatcher,
+    providers: [provideShortUrlService],
+    loadComponent: () =>
+    import('./views/slug-lookup/slug-lookup.component').then(m => m.SlugLookupComponent),
+  },
   { path: '**', redirectTo: 'home' }
 ];
